@@ -25,7 +25,7 @@ python generate_novaretail_deck.py
 
 The script writes `NovaRetail_Q2_2026_Executive_Deck.pptx` to the same folder.
 
-## Design choices
+## Design Overview
 
 - Slide 1 uses total Q2 revenue, quarter-over-quarter revenue growth, and revenue-weighted NPS.
 - Slide 2 uses a clustered column chart for revenue by region and quarter.
