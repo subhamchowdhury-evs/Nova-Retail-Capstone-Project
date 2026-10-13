@@ -14,7 +14,14 @@ This project generates a five-slide Quarterly Business Review deck from the prov
 ```bash
 pip install python-pptx openpyxl
 ```
-
+# Required files in the same directory:
+- novaretail_template.pptx
+- novaretail_dataset.xlsx
+- growth_chart.png
+- customer_star.png
+- risk_alert.png
+- lightbulb_action.png
+  
 ## Run
 
 Place all files in the same folder and run:
