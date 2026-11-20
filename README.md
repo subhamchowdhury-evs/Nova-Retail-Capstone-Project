@@ -1,203 +1,102 @@
-# NovaRetail Q2 2026 Executive Deck Generator
 
-This project generates the NovaRetail Q2 2026 Executive Deck from the supplied Excel dataset and PowerPoint template. The script calculates the executive KPIs, creates native PowerPoint charts, populates the template placeholders, inserts the supplied icons, and saves the completed presentation as a new `.pptx` file.
+# NovaRetail Executive Deck Automation
 
-## Project structure
+This repository generates the NovaRetail Q2 2026 executive deck from the included workbook and PowerPoint template. It now includes a Google Agent Development Kit (ADK) agent that reads the workbook, generates executive insights as structured JSON, and passes those insights to the PowerPoint generator.
 
-Keep the following files in the same folder:
+## Repository contents
 
 ```text
-NovaRetail_Capstone/
-├── generate_novaretail_ppt.py
-├── novaretail_template.pptx
-├── novaretail_dataset.xlsx
-├── growth_chart.png
-├── customer_star.png
-├── risk_alert.png
-├── lightbulb_action.png
-└── README.md
+novaretail_agent/
+  __init__.py
+  agent.py
+run_pipeline.py
+generate_novaretail_ppt.py
+generated_insights.json
+novaretail_dataset.xlsx
+novaretail_template.pptx
+NovaRetail_Q2_2026_Executive_Deck.pptx
+growth_chart.png
+customer_star.png
+risk_alert.png
+lightbulb_action.png
+requirements.txt
+.env.example
+README.md
 ```
 
-## Prerequisites
+Every file above is used. The input workbook, template, required icons, generated insight JSON, and final PowerPoint are included.
 
-- Python 3.9 or later
-- `pip`
-- The supplied NovaRetail PowerPoint template
-- The supplied NovaRetail Excel dataset
-- The four required PNG icon files
+## How the automation works
 
-## Setup
+1. `novaretail_agent/agent.py` defines the ADK `root_agent` and the `load_novaretail_data` tool.
+2. The agent reads all three workbook sheets and generates headlines, bullets, recommendations, and an executive summary in strict JSON.
+3. `run_pipeline.py` saves the agent output as `generated_insights.json`.
+4. `generate_novaretail_ppt.py` calculates the numeric KPIs, creates native PowerPoint charts, inserts icons, and populates the template with the ADK insights.
+5. The pipeline writes `NovaRetail_Q2_2026_Executive_Deck.pptx`.
 
-### 1. Open a terminal in the project folder
+## Requirements
 
-Windows PowerShell example:
+- Python 3.11 or later
+- A Google AI Studio API key
 
-```powershell
-cd "C:\path\to\NovaRetail_Capstone"
-```
-
-macOS or Linux example:
+Install dependencies:
 
 ```bash
-cd /path/to/NovaRetail_Capstone
+python -m venv .venv
 ```
 
-### 2. Create a virtual environment
-
-Windows:
+Windows PowerShell:
 
 ```powershell
-python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\Activate.ps1
 ```
 
 macOS or Linux:
 
 ```bash
-python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install the dependencies
-
 ```bash
-python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## Run the script
+## Configure the API key
+
+Copy `.env.example` to `.env` and replace the placeholder value:
+
+```text
+GOOGLE_API_KEY=your_real_api_key
+GOOGLE_GENAI_USE_VERTEXAI=FALSE
+```
+
+Do not commit `.env`.
+
+## Run the complete ADK pipeline
+
+```bash
+python run_pipeline.py
+```
+
+This command generates fresh AI insights and rebuilds the PowerPoint.
+
+## Regenerate only the PowerPoint
+
+The repository includes `generated_insights.json`, so the deck can be rebuilt without another model call:
 
 ```bash
 python generate_novaretail_ppt.py
 ```
 
-On systems where Python is invoked as `python3`, run:
-
-```bash
-python3 generate_novaretail_ppt.py
-```
-
 ## Output
-
-A successful run creates the following file in the project folder:
 
 ```text
 NovaRetail_Q2_2026_Executive_Deck.pptx
 ```
 
-The terminal also displays:
-
-```text
-Created: <project-folder>/NovaRetail_Q2_2026_Executive_Deck.pptx
-```
-
-## Input workbook requirements
-
-The script expects these worksheets:
-
-```text
-Regional_Performance
-Customer_Experience
-Operational_Risk
-```
-
-The KPI and chart logic also expects the field names used by the supplied dataset, including:
-
-```text
-Quarter
-Region
-Revenue_USD_M
-NPS
-Stockout_Rate_pct
-```
-
-Do not rename the worksheets, template shapes, or required columns unless the corresponding references in the Python script are also updated.
-
 ## KPI calculations
 
-### Q2 2026 revenue
+- Q2 revenue: sum of `Revenue_USD_M` for the latest quarter.
+- QoQ growth: `(latest quarter revenue / previous quarter revenue) - 1`.
+- Revenue-weighted NPS: `sum(region revenue × region NPS) / total revenue`.
 
-```text
-Sum of Revenue_USD_M for all regions in the latest quarter
-```
-
-For the supplied dataset:
-
-```text
-465 + 345 + 330 + 140 = 1,280 million = $1.28B
-```
-
-### Quarter-over-quarter revenue growth
-
-```text
-(Current-quarter revenue / Previous-quarter revenue) - 1
-```
-
-For the supplied dataset:
-
-```text
-(1,280 / 1,225) - 1 = 4.49%, displayed as +4.5%
-```
-
-### Revenue-weighted NPS
-
-```text
-Sum(Regional revenue × Regional NPS) / Total revenue
-```
-
-For the supplied dataset, the result is displayed as:
-
-```text
-53.4
-```
-
-## Presentation contents
-
-The script generates five slides:
-
-1. Executive overview and KPI cards
-2. Revenue and commercial performance
-3. Customer experience trends
-4. Operational risk
-5. Recommended actions and next steps
-
-## Troubleshooting
-
-### `FileNotFoundError`
-
-Confirm that the template, dataset, script, and required icons are in the same folder and use these exact filenames:
-
-```text
-novaretail_template.pptx
-novaretail_dataset.xlsx
-growth_chart.png
-customer_star.png
-risk_alert.png
-lightbulb_action.png
-```
-
-### `KeyError: Template shape not found`
-
-The PowerPoint template uses named shapes such as `kpi1_value`, `chart_performance`, and `icon_1`. Use the supplied template without renaming or deleting its placeholders.
-
-### `KeyError` for a worksheet or column
-
-Confirm that the workbook contains the expected worksheets and column headers. Column and worksheet names are case-sensitive in the script.
-
-### Dependency errors
-
-Reinstall the project dependencies:
-
-```bash
-pip install --upgrade --force-reinstall -r requirements.txt
-```
-
-## Recreating the output
-
-To regenerate the presentation after changing the dataset, replace `novaretail_dataset.xlsx` with the updated workbook while preserving the expected worksheet and column names, then rerun:
-
-```bash
-python generate_novaretail_ppt.py
-```
-
-The existing output file with the same name will be overwritten.
